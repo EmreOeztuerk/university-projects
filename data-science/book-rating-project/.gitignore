@@ -1,0 +1,27 @@
+# created by virtualenv automatically
+
+# Virtuelle Umgebung
+.venv/
+venv/
+
+# Bytecode-Dateien
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter Notebooks Checkpoints
+.ipynb_checkpoints/
+
+# Temporäre Dateien
+*.log
+*.tmp
+*.swp
+*.bak
+
+# VSCode / PyCharm / IDE-spezifisch
+.vscode/
+.idea/
+
+# OS-spezifisch
+.DS_Store
+Thumbs.db
