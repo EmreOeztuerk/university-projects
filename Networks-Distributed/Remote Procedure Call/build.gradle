@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+//group = 'org.example'
+//version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // GSON dependency
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // JUnit Jupiter API & Engine for Java 21 compatibility
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.1'
+
+    // AssertJ for fluent assertions
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Create a jar for Server
+tasks.register('serverJar', Jar) {
+    archiveBaseName = 'server'
+    from sourceSets.main.output
+
+    // Include runtime dependencies (create a fat/uber jar) so external libs like Gson
+    // are available at runtime when running the jar directly.
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'Skeleton'
+    }
+
+    // Avoid duplicate entries when merging jars
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn classes
+}
+
+// Create a jar for Client
+tasks.register('clientJar', Jar) {
+    archiveBaseName = 'client'
+    from sourceSets.main.output
+
+    // Make client jar self-contained as well
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'Client'
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn classes
+}
+
+// Modify the build task to create both jars
+build {
+    dependsOn serverJar, clientJar
+}
